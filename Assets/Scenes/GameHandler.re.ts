@@ -8,7 +8,21 @@ export default class GameHandler extends RE.Component {
   private _sceneHandler: SceneHandler;
   private _boardHandler: BoardHandler;
 
+  private container: HTMLDivElement = document.createElement('div');
+
+  async awake() {
+    // Thanks BeardScript for this trick to load the stylsheet!
+    this.container.style.display = 'none';
+
+    const filePath = RE.getStaticPath('Styles.html');
+    const res = await fetch(filePath);
+
+    this.container.innerHTML = await res.text();
+    RE.Runtime.uiContainer.append(this.container);
+  }
+
   start() {
+
     this._sceneHandler = RE.getComponent(SceneHandler, this.object3d);
     this._boardHandler = RE.getComponent(BoardHandler);
 

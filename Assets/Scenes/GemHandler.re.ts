@@ -13,6 +13,8 @@ export default class GemHandler extends RE.Component {
 
   start() {
     this.css2dObject = RE.getComponent(RogueCSS2D, this.object3d);
+
+    this.css2dObject.div.className = `gem ${this.colorOptions[this.color]}`;
   }
 
   update() {
