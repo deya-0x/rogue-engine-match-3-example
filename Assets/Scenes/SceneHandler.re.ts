@@ -36,7 +36,7 @@ export default class SceneHandler extends RE.Component {
     this._composer.addPass(this._outputPass);
     this._composer.addPass(this._fxaaPass);
 
-    RE.Runtime.renderFunc = this.renderScene;
+    RE.Runtime.renderFunc = () => this.renderScene();
   }
 
   get outlineObjects(): THREE.Object3D[] {
