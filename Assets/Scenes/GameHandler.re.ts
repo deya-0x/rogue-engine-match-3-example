@@ -1,13 +1,16 @@
 import * as RE from 'rogue-engine';
 import SceneHandler from './SceneHandler.re';
+import BoardHandler from './BoardHandler.re';
 
 @RE.registerComponent
 export default class GameHandler extends RE.Component {
   
   private _sceneHandler: SceneHandler;
+  private _boardHandler: BoardHandler;
 
   start() {
     this._sceneHandler = RE.getComponent(SceneHandler, this.object3d);
+    this._boardHandler = RE.getComponent(BoardHandler);
 
     // Set up the input action map for the game
     RE.Input.setActionMap({
@@ -25,7 +28,14 @@ export default class GameHandler extends RE.Component {
   
       if (picked) {
         RE.Debug.log(picked.name);
-        this._sceneHandler.outlineObjects = [picked];
+        // Select the gem
+        if (this._boardHandler.selectGem(picked)) {
+          // Add this object to the outline shader's list of objects to outline
+          this._sceneHandler.outlineObjects = [];
+        }
+        else {
+          this._sceneHandler.outlineObjects = [picked];
+        }
       }
     }
   }

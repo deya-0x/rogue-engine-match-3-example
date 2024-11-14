@@ -1,5 +1,5 @@
 import * as RE from 'rogue-engine';
-
+import * as THREE from 'three';
 @RE.registerComponent
 export default class BoardHandler extends RE.Component {
 
@@ -10,6 +10,8 @@ export default class BoardHandler extends RE.Component {
   private _rows: number = 5;
   private _columnWidth: number = 3;
   private _rowHeight: number = 3;
+
+  private _selectedGem: THREE.Object3D | null = null;
 
   public get boardWidth(): number {
     return this._columns * this._columnWidth;
@@ -39,5 +41,27 @@ export default class BoardHandler extends RE.Component {
 
     // Move the board to the center of the screen
     this.object3d.position.set(-this.boardWidth / 2, 0, 0);
+  }
+
+  public get selectedGem(): THREE.Object3D | null {
+    return this._selectedGem;
+  }
+
+  public selectGem(gem: THREE.Object3D): boolean {
+    // Check if we have a gem selected already
+    if (this._selectedGem) {
+      // If we do, swap the positions of the two gems
+      const currentlySelectedPosition = this._selectedGem.position.clone();
+      const selectedPosition = gem.position.clone();
+      this._selectedGem.position.copy(selectedPosition);
+      gem.position.copy(currentlySelectedPosition);
+
+      this._selectedGem = null;
+      return true;
+      
+    } else {
+      this._selectedGem = gem;
+      return false;
+    }
   }
 }
