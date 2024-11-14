@@ -61,16 +61,28 @@ export default class BoardHandler extends RE.Component {
   public selectGem(gem: THREE.Object3D): boolean {
     // Check if we have a gem selected already
     if (this._selectedGem) {
-      this.swapGems(this._selectedGem, gem);
-      return true;
-
+      if (this.swapGems(this._selectedGem, gem)) {
+        return true;
+      }
+      else {
+        this._selectedGem = gem;
+        return false;
+      }
     } else {
       this._selectedGem = gem;
       return false;
     }
   }
 
-  private swapGems(gem1: THREE.Object3D, gem2: THREE.Object3D) {
+  private swapGems(gem1: THREE.Object3D, gem2: THREE.Object3D): boolean {
+    // First verify that the gems are adjacent to each other.
+    const gem1Handler = RE.getComponent(GemHandler, gem1) as GemHandler;
+    const gem2Handler = RE.getComponent(GemHandler, gem2) as GemHandler;
+
+    if (Math.abs(gem1Handler.row - gem2Handler.row) > 1 || Math.abs(gem1Handler.column - gem2Handler.column) > 1) {
+      return false;
+    }
+
     const gem1Position = gem1.position.clone();
     const gem2Position = gem2.position.clone();
 
@@ -78,10 +90,10 @@ export default class BoardHandler extends RE.Component {
     Tween.create(gem2.position, gem1Position, 500, EASINGS.Bounce.EaseOut, this.onTweenCompleted.bind(this));
 
     // Swap the gems row and column
-    const gem1Handler = RE.getComponent(GemHandler, gem1) as GemHandler;
-    const gem2Handler = RE.getComponent(GemHandler, gem2) as GemHandler;
     [gem1Handler.row, gem2Handler.row] = [gem2Handler.row, gem1Handler.row];
     [gem1Handler.column, gem2Handler.column] = [gem2Handler.column, gem1Handler.column];
+
+    return true;
   }
 
   private onTweenCompleted() {
