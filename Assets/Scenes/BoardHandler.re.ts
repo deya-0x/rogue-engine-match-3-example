@@ -2,6 +2,8 @@ import EASINGS from '@RE/EyeOfMidas/tween/Lib/Easings';
 import Tween from '@RE/EyeOfMidas/tween/Lib/Tween';
 import * as RE from 'rogue-engine';
 import * as THREE from 'three';
+import GemHandler from './GemHandler.re';
+
 @RE.registerComponent
 export default class BoardHandler extends RE.Component {
 
@@ -14,6 +16,10 @@ export default class BoardHandler extends RE.Component {
   private _rowHeight: number = 3;
 
   private _selectedGem: THREE.Object3D | null = null;
+
+  public get isAnimating(): boolean {
+    return Tween.activeTweens.length > 0;
+  }
 
   public get boardWidth(): number {
     return this._columns * this._columnWidth;
@@ -37,6 +43,9 @@ export default class BoardHandler extends RE.Component {
         // Pick a random gem prefab from the list
         const gemPrefab = this.gems[Math.floor(Math.random() * this.gems.length)];
         const gem = gemPrefab.instantiate(this.object3d);
+        const gemHandler = RE.getComponent(GemHandler, gem) as GemHandler;
+        gemHandler.row = j;
+        gemHandler.column = i;
         gem.position.set(i * this._columnWidth, j * this._rowHeight, 0);
       }
     }
@@ -67,6 +76,12 @@ export default class BoardHandler extends RE.Component {
 
     Tween.create(gem1.position, gem2Position, 500, EASINGS.Bounce.EaseOut, this.onTweenCompleted.bind(this));
     Tween.create(gem2.position, gem1Position, 500, EASINGS.Bounce.EaseOut, this.onTweenCompleted.bind(this));
+
+    // Swap the gems row and column
+    const gem1Handler = RE.getComponent(GemHandler, gem1) as GemHandler;
+    const gem2Handler = RE.getComponent(GemHandler, gem2) as GemHandler;
+    [gem1Handler.row, gem2Handler.row] = [gem2Handler.row, gem1Handler.row];
+    [gem1Handler.column, gem2Handler.column] = [gem2Handler.column, gem1Handler.column];
   }
 
   private onTweenCompleted() {
