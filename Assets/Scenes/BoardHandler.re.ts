@@ -1,3 +1,5 @@
+import EASINGS from '@RE/EyeOfMidas/tween/Lib/Easings';
+import Tween from '@RE/EyeOfMidas/tween/Lib/Tween';
 import * as RE from 'rogue-engine';
 import * as THREE from 'three';
 @RE.registerComponent
@@ -26,7 +28,7 @@ export default class BoardHandler extends RE.Component {
   }
 
   update() {
-
+    
   }
 
   private createBoard() {
@@ -50,18 +52,24 @@ export default class BoardHandler extends RE.Component {
   public selectGem(gem: THREE.Object3D): boolean {
     // Check if we have a gem selected already
     if (this._selectedGem) {
-      // If we do, swap the positions of the two gems
-      const currentlySelectedPosition = this._selectedGem.position.clone();
-      const selectedPosition = gem.position.clone();
-      this._selectedGem.position.copy(selectedPosition);
-      gem.position.copy(currentlySelectedPosition);
-
-      this._selectedGem = null;
+      this.swapGems(this._selectedGem, gem);
       return true;
-      
+
     } else {
       this._selectedGem = gem;
       return false;
     }
+  }
+
+  private swapGems(gem1: THREE.Object3D, gem2: THREE.Object3D) {
+    const gem1Position = gem1.position.clone();
+    const gem2Position = gem2.position.clone();
+
+    Tween.create(gem1.position, gem2Position, 500, EASINGS.Bounce.EaseOut, this.onTweenCompleted.bind(this));
+    Tween.create(gem2.position, gem1Position, 500, EASINGS.Bounce.EaseOut, this.onTweenCompleted.bind(this));
+  }
+
+  private onTweenCompleted() {
+    this._selectedGem = null;
   }
 }

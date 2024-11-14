@@ -6,6 +6,7 @@ import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass.js';
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
 import { OutputPass } from 'three/examples/jsm/postprocessing/OutputPass.js';
 import { OutlinePass } from 'three/examples/jsm/postprocessing/OutlinePass.js';
+import Tween from '@RE/EyeOfMidas/tween/Lib/Tween';
 
 @RE.registerComponent
 export default class SceneHandler extends RE.Component {
@@ -48,7 +49,7 @@ export default class SceneHandler extends RE.Component {
   }
 
   update() {
-
+    Tween.update();
   }
 
   renderScene() {
